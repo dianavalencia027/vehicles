@@ -7,18 +7,18 @@ using Vehicles.API.Data.Entities;
 
 namespace Vehicles.API.Controllers
 {
-    public class DocumentTypesController : Controller
+    public class BrandsController : Controller
     {
         private readonly DataContext _context;
 
-        public DocumentTypesController(DataContext context)
+        public BrandsController(DataContext context)
         {
             _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DocumentTypes.ToListAsync());
+            return View(await _context.Brands.ToListAsync());
         }
 
         public IActionResult Create()
@@ -28,13 +28,13 @@ namespace Vehicles.API.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(DocumentType documentType)
+        public async Task<IActionResult> Create(Brand brand)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Add(documentType);
+                    _context.Add(brand);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -42,7 +42,7 @@ namespace Vehicles.API.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe este tipo de documento");
+                        ModelState.AddModelError(string.Empty, "Ya existe esta marca");
                     }
                     else
                     {
@@ -55,7 +55,7 @@ namespace Vehicles.API.Controllers
                 }
             }
 
-            return View(documentType);
+            return View(brand);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -65,20 +65,20 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            DocumentType documentType = await _context.DocumentTypes.FindAsync(id);
-            if (documentType == null)
+            Brand brand = await _context.Brands.FindAsync(id);
+            if (brand == null)
             {
                 return NotFound();
             }
 
-            return View(documentType);
+            return View(brand);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, DocumentType documentType)
+        public async Task<IActionResult> Edit(int id, Brand brand)
         {
-            if (id != documentType.Id)
+            if (id != brand.Id)
             {
                 return NotFound();
             }
@@ -87,7 +87,7 @@ namespace Vehicles.API.Controllers
             {
                 try
                 {
-                    _context.Update(documentType);
+                    _context.Update(brand);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -95,7 +95,7 @@ namespace Vehicles.API.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe este tipo de documento");
+                        ModelState.AddModelError(string.Empty, "Ya existe esta marca");
                     }
                     else
                     {
@@ -107,7 +107,7 @@ namespace Vehicles.API.Controllers
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
             }
-            return View(documentType);
+            return View(brand);
         }
 
         public async Task<IActionResult> Delete(int? id)
@@ -117,14 +117,14 @@ namespace Vehicles.API.Controllers
                 return NotFound();
             }
 
-            DocumentType documentType = await _context.DocumentTypes
+            Brand brand = await _context.Brands
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (documentType == null)
+            if (brand == null)
             {
                 return NotFound();
             }
 
-            _context.DocumentTypes.Remove(documentType);
+            _context.Brands.Remove(brand);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
