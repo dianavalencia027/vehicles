@@ -47,5 +47,7 @@ namespace Vehicles.API.Data.Entities
 
         public ICollection<Vehicle> Vehicles { get; set; }
 
+        [Display(Name = "# Vehículos")]
+        public int VehiclesCount => Vehicles == null ? 0 : Vehicles.Count;
     }
 }
