@@ -282,7 +282,7 @@ namespace Vehicles.API.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe un vehículo con esta placa.");
+                        ModelState.AddModelError(string.Empty, "Ya existe un vehículo con esta placa");
                     }
                     else
                     {
@@ -298,6 +298,55 @@ namespace Vehicles.API.Controllers
             vehicleViewModel.Brands = _combosHelper.GetComboBrands();
             vehicleViewModel.VehicleTypes = _combosHelper.GetComboVehicleTypes();
             return View(vehicleViewModel);
+        }
+
+        public async Task<IActionResult> DeleteVehicle(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Vehicle vehicle = await _context.Vehicles
+                .Include(x => x.User)
+                .Include(x => x.VehiclePhotos)
+                .Include(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+
+            _context.Vehicles.Remove(vehicle);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id = vehicle.User.Id });
+        }
+
+        public async Task<IActionResult> DeleteImageVehicle(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            VehiclePhoto vehiclePhoto = await _context.VehiclePhotos
+                .Include(x => x.Vehicle)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (vehiclePhoto == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await _blobHelper.DeleteBlobAsync(vehiclePhoto.ImageId, "vehiclephotos");
+            }
+            catch { }
+
+            _context.VehiclePhotos.Remove(vehiclePhoto);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(EditVehicle), new { id = vehiclePhoto.Vehicle.Id });
         }
     }
 }
