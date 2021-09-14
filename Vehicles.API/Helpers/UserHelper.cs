@@ -90,6 +90,16 @@ namespace Vehicles.API.Helpers
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
+        public async Task<string> GeneratePasswordResetTokenAsync(User user)
+        {
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task<IdentityResult> ResetPasswordAsync(User user, string token, string password)
+        {
+            return await _userManager.ResetPasswordAsync(user, token, password);
+        }
+
         public async Task<User> GetUserAsync(string email)
         {
             return await _context.Users
