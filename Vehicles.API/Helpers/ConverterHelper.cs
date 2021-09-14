@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Vehicles.API.Data;
 using Vehicles.API.Data.Entities;
@@ -17,6 +15,33 @@ namespace Vehicles.API.Helpers
         {
             _context = context;
             _combosHelper = combosHelper;
+        }
+
+        public async Task<Detail> ToDetailAsync(DetailViewModel model, bool isNew)
+        {
+            return new Detail
+            {
+                Id = isNew ? 0 : model.Id,
+                History = await _context.Histories.FindAsync(model.HistoryId),
+                LaborPrice = model.LaborPrice,
+                Procedure = await _context.Procedures.FindAsync(model.ProcedureId),
+                Remarks = model.Remarks,
+                SparePartsPrice = model.SparePartsPrice
+            };
+        }
+
+        public DetailViewModel ToDetailViewModel(Detail detail)
+        {
+            return new DetailViewModel
+            {
+                HistoryId = detail.History.Id,
+                Id = detail.Id,
+                LaborPrice = detail.LaborPrice,
+                ProcedureId = detail.Procedure.Id,
+                Procedures = _combosHelper.GetComboProcedures(),
+                Remarks = detail.Remarks,
+                SparePartsPrice = detail.SparePartsPrice
+            };
         }
 
         public async Task<User> ToUserAsync(UserViewModel model, Guid imageId, bool isNew)
@@ -88,7 +113,5 @@ namespace Vehicles.API.Helpers
                 VehicleTypes = _combosHelper.GetComboVehicleTypes()
             };
         }
-
-
     }
 }
