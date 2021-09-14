@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Vehicles.API.Data.Entities
 {
@@ -41,7 +40,7 @@ namespace Vehicles.API.Data.Entities
 
         [Display(Name = "Total Repuestos")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
-        public decimal TotalSparePats => Details == null ? 0 : Details.Sum(x => x.SparePartsPrice);
+        public decimal TotalSpareParts => Details == null ? 0 : Details.Sum(x => x.SparePartsPrice);
 
         [Display(Name = "Total")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
