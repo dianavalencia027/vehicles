@@ -126,6 +126,7 @@ namespace Vehicles.API.Controllers
             return View(model);
         }
 
+
         public async Task<IActionResult> ChangeUser()
         {
             User user = await _userHelper.GetUserAsync(User.Identity.Name);
