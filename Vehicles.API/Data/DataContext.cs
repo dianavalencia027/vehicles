@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 using Vehicles.API.Data.Entities;
 
 namespace Vehicles.API.Data
@@ -27,6 +28,10 @@ namespace Vehicles.API.Data
 
         public DbSet<VehicleType> VehicleTypes { get; set; }
 
+        internal object OrderBy(Func<object, object> p)
+        {
+            throw new NotImplementedException();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

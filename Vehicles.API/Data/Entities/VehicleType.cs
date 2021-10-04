@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Vehicles.API.Data.Entities
 {
@@ -13,6 +14,7 @@ namespace Vehicles.API.Data.Entities
 
         public string Description { get; set; }
 
+        [JsonIgnore]
         public ICollection<Vehicle> Vehicles { get; set; }
     }
 }
