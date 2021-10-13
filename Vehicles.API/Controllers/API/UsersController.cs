@@ -71,6 +71,45 @@ namespace Vehicles.API.Controllers.API
         }
 
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<User>> PutUser(String id, UserRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            DocumentType documentType = await _context.DocumentTypes.FindAsync(request.DocumentTypeId);
+            if (documentType == null)
+            {
+                return BadRequest("El tipo de documento no existe");
+            }
+
+            User user = await _userHelper.GetUserAsync(Guid.Parse(id));
+            if (user == null)
+            {
+                return BadRequest("El usuario no existe");
+            }
+
+            Guid imageId = Guid.Empty;
+            if (request.Image != null && request.Image.Length > 0)
+            {
+                imageId = await _blobHelper.UploadBlobAsync(request.Image, "users");
+            }
+
+            user.Address = request.Address;
+            user.Document = request.Document;
+            user.DocumentType = documentType;
+            user.FirstName = request.FirstName;
+            user.ImageId = imageId;
+            user.LastName = request.LastName;
+            user.PhoneNumber = request.PhoneNumber;
+
+            await _userHelper.UpdateUserAsync(user);
+            return NoContent();
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(UserRequest request)
         {
@@ -82,13 +121,13 @@ namespace Vehicles.API.Controllers.API
             DocumentType documentType = await _context.DocumentTypes.FindAsync(request.DocumentTypeId);
             if (documentType == null)
             {
-                return BadRequest("El tipo de documento no existe.");
+                return BadRequest("El tipo de documento no existe");
             }
 
             User user = await _userHelper.GetUserAsync(request.Email);
             if (user != null)
             {
-                return BadRequest("Ya existe un usuario rtegistrado con ese email.");
+                return BadRequest("Ya existe un usuario registrado con ese email");
             }
 
             Guid imageId = Guid.Empty;
@@ -126,6 +165,28 @@ namespace Vehicles.API.Controllers.API
                 $"por favor hacer clic en el siguiente enlace: </br></br><a href = \"{tokenLink}\">Confirmar Email</a>");
 
             return Ok(user);
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser (string id)
+        {
+            User user = await _context.Users
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.VehiclePhotos)
+                .Include(x => x.Vehicles)
+                .ThenInclude(x => x.Histories)
+                .ThenInclude(x => x.Details)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user.ImageId != Guid.Empty)
+            {
+                await _blobHelper.DeleteBlobAsync(user.ImageId, "users");
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
     }
