@@ -82,13 +82,13 @@ namespace Vehicles.API.Controllers.API
             DocumentType documentType = await _context.DocumentTypes.FindAsync(request.DocumentTypeId);
             if (documentType == null)
             {
-                return BadRequest("El tipo de documento no existe");
+                return BadRequest("El tipo de documento no existe.");
             }
 
             User user = await _userHelper.GetUserAsync(request.Email);
             if (user != null)
             {
-                return BadRequest("Ya existe un usuario rtegistrado con ese email");
+                return BadRequest("Ya existe un usuario rtegistrado con ese email.");
             }
 
             Guid imageId = Guid.Empty;
@@ -127,10 +127,6 @@ namespace Vehicles.API.Controllers.API
 
             return Ok(user);
         }
-
-
-
-
 
     }
 }
